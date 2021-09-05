@@ -166,7 +166,8 @@ function updatealiases() {
     fi
   fi
 
-  echo -e "An error occured.\nPlease make sure the \".bash_aliases\" file\nand you're running this command from the \".bash\" folder in the repo."
+  echo -e "An error occured.\nPlease make sure the \".bash_aliases\" file\nand 
+  you're running this command from the \".bash\" folder in the repo."
   return 1
 }
 
