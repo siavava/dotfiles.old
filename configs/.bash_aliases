@@ -141,22 +141,23 @@ function updatealiases() {
   info="utility to update aliases"
 
   if [[ "$currFolder" != "bash" ]]; then
-    echo "Please run this utility from the bash folder."
-    return 1
+    echo "Please run this utility from the \"bash\" folder."
   else
     now=$(date +"%Y-%m-%d at %H:%M:%S")
     git checkout "main"
     cp "$HOME/.bash_aliases" "./configs/.bash_aliases" &&
     git add -A &&
-    git commit -m "$now" &&
-    git push origin main &&
-    echo -e "Update complete!\nCommit \"$now\" pushed to GitHub."
+    if [[ $(git commit -m "$now") && $(git push origin main) ]]; then
+      echo -e "Update complete!\nCommit \"$now\" pushed to GitHub."
+      return 0
+    else
+      echo "The files are already up to date."
+      return 2
+    fi
   fi
 
-  # if error occured in command sequence, print error message
-  if (( $? )); then
-    echo -e "Error: could not update .bash_aliases file.\nPlease check that the directories and source files exist."
-  fi
+  echo -e "An error occured.\nPlease make sure the \".bash_aliases\" file\nand you're running this command from the \".bash\" folder in the repo."
+  return 1
 }
 
 
