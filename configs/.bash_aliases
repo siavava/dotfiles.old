@@ -147,7 +147,7 @@ function updatealiases() {
     git checkout "main"
     cp "$HOME/.bash_aliases" "./configs/.bash_aliases" &&
     git add -A &&
-    if ! [[ $(git commit -m "$now") && $(git push origin main) ]]; then
+    if [[ $(git commit -m "$now") && $(git push origin main) ]]; then
       echo -e "Update complete!\nCommit \"$now\" pushed to GitHub."
       return 0
     else
