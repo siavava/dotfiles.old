@@ -142,11 +142,17 @@ function updatealiases() {
 
   if [[ "$currFolder" != "bash" ]]; then
     echo "Please run this utility from the \"bash\" folder."
+    return 3
+
+  elif ! [[ -r "$HOME/.bash_aliases" ]]; then
+    echo "$HOME/.bash_aliases file not found. Stop."
+    return 4
   else
     now=$(date +"%Y-%m-%d at %H:%M:%S")
-    git checkout "main"
+    git checkout "main" &&
     cp "$HOME/.bash_aliases" "./configs/.bash_aliases" &&
     git add -A &&
+
     if [[ $(git commit -m "$now") ]]; then
     
       git push "origin" "main" && 
@@ -155,7 +161,7 @@ function updatealiases() {
       return 1
 
     else
-      echo "The files are already up to date."
+      echo "Commit failed. Make sure the \"main\" branch exists."
       return 2
     fi
   fi
