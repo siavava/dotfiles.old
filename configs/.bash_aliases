@@ -147,9 +147,15 @@ function updatealiases() {
     git checkout "main"
     cp "$HOME/.bash_aliases" "./configs/.bash_aliases" &&
     git add -A &&
-    if [[ $(git commit -m "$now") && $(git push origin main) ]]; then
-      echo -e "Update complete!\nCommit \"$now\" pushed to GitHub."
-      return 0
+    if [[ $(git commit -m "$now") ]]; then
+
+      if [[ $(git push origin main) ]]; then
+        echo -e "Update complete!\nCommit \"$now\" pushed to GitHub."
+        return 0
+      else
+        echo "Error: push failed."
+        return 1
+      fi
     else
       echo "The files are already up to date."
       return 2
