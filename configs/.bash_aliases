@@ -148,14 +148,12 @@ function updatealiases() {
     cp "$HOME/.bash_aliases" "./configs/.bash_aliases" &&
     git add -A &&
     if [[ $(git commit -m "$now") ]]; then
+    
+      git push "origin" "main" && 
+      echo "Push successful!"; return 0 ||
+      echo -e "Push to GitHub failed.\nPlease check the remote configuration and your internet connection."
+      return 1
 
-      if [[ $(git push origin main) ]]; then
-        echo -e "Update complete!\nCommit \"$now\" pushed to GitHub."
-        return 0
-      else
-        echo "Error: push failed."
-        return 1
-      fi
     else
       echo "The files are already up to date."
       return 2
