@@ -137,17 +137,25 @@ function submit() {
 
 # update bash_aliases file and push to GitHub.
 function updatealiases() {
+  currFolder=$(basename "$PWD")
   info="utility to update aliases"
-  now=$(date +"%Y-%m-%d at %H:%M:%S")
-  # echo "now = $now"
-  git checkout "main"
-  cp "/root/.bash_aliases" "./configs/.bash_aliases" &&
-  git add -A &&
-  git commit -m "$now" &&
-  git push origin main
 
+  if [[ "$currFolder" != "bash" ]]; then
+    echo "Please run this utility from the bash folder."
+    return 1
+  else
+    now=$(date +"%Y-%m-%d at %H:%M:%S")
+    git checkout "main"
+    cp "$HOME/.bash_aliases" "./configs/.bash_aliases" &&
+    git add -A &&
+    git commit -m "$now" &&
+    git push origin main &&
+    echo -e "Update complete!\nCommit $now pushed to GitHub."
+  fi
+
+  # if error occured in command sequence, print error message
   if (( $? )); then
-    echo "Error: updatealiases failed."
+    echo -e "Error: could not update .bash_aliases file.\nPlease check that the directories and source files exist."
   fi
 }
 
