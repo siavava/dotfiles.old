@@ -127,11 +127,28 @@ function submit() {
     echo "submit$1 successfully pushed to GitHub!"
   fi
 
-  if (( $? != 0 )); then
+  if ! (( $? )); then
     echo "Error: submit failed."
+    return 1
   fi
 
-  return "$?"
+  return 0
+}
+
+# update bash_aliases file and push to GitHub.
+function updatealiases() {
+  info="utility to update aliases"
+  now=$(date +"%Y-%m-%d at %H:%M:%S")
+  # echo "now = $now"
+  git checkout "main"
+  cp "/root/.bash_aliases" "./configs/.bash_aliases" &&
+  git add -A &&
+  git commit -m "$now" &&
+  git push origin main
+
+  if (( $? )); then
+    echo "Error: updatealiases failed."
+  fi
 }
 
 
