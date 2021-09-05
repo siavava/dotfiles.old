@@ -150,7 +150,7 @@ function updatealiases() {
     git add -A &&
     git commit -m "$now" &&
     git push origin main &&
-    echo -e "Update complete!\nCommit $now pushed to GitHub."
+    echo -e "Update complete!\nCommit \"$now\" pushed to GitHub."
   fi
 
   # if error occured in command sequence, print error message
