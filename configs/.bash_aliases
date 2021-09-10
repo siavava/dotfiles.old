@@ -22,17 +22,21 @@ alias search='history|grep'
 
 function weather() {
 
-  # if no argument, print for Nairobi.
+  # if no argument, print for Hanover, NH.
   if [[ $# -eq 0 ]]; then
-    printf "\nNo location specified... Showing updates for Nairobi.\n\n"
-    curl -s "http://v2.wttr.in/Nairobi"
+    printf "\nNo location specified.\nShowing updates for your current location.\n\n"
+    curl -s "http://v2.wttr.in"
 
   # else print weather for each location entered.
   else
-    while (( $# )); do
-      curl -s "http://v2.wttr.in/$1" 
-      shift
+    for location in "$@"; do
+      curl -s "http://v2.wttr.in/$location"
     done
+
+    # while (( $# )); do
+    #   curl -s "http://v2.wttr.in/$1" 
+    #   shift
+    # done
   fi
 }
 
@@ -104,7 +108,7 @@ function history() {
 function submit() {
   # submit a CS50 assignment.
   info="utility to submit a CS50 assignment"
-  usage="submit [branch name]"
+  usage="submit [lab number]"
   example="submit submit1"
 
 # no args or help flag -- print usage text.
@@ -112,25 +116,37 @@ function submit() {
     echo "$info"
     echo "Usage: $usage"
     echo "Example: $example"
+    return 0
 
-# if DIR is not a git repository, print error message and set flag.
+# if DIR is not a git repository, print error message and return.
   elif ! [[ -d ".git" ]]; then
     echo "Please run inside a git repository."
     echo "Error: submit failed."
     return 1
-  else
-    git branch "submit$1" &&
-    git checkout "submit$1" &&
-    git merge "main" "submit$1" &&
-    git push "origin" "submit$1" &&
-    git checkout "main" &&
-    echo "submit$1 successfully pushed to GitHub!"
   fi
 
-  if ! (( $? )); then
-    echo "Error: submit failed."
+
+  git branch "submit$1" || { 
+    echo "Error creating \"submit$1\" branch."
     return 1
-  fi
+  }
+
+  git checkout "submit$1" || {
+    echo "Error checking out \"submit$1\" branch."
+    return 1
+  }
+
+  git merge "main" "submit$1" || {
+    echo "Error merging \"main\" branch into \"submit$1\" branch."
+    return 1
+  }
+  git push "origin" "submit$1" || { 
+    echo "Error pushing branch to remote. Please check your internet connection and your access to the repo."
+    return 1
+  }
+  
+  git checkout "main"
+  echo "submit$1 successfully pushed to GitHub!"
 
   return 0
 }
@@ -172,3 +188,69 @@ function updatealiases() {
 }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+#############################################################################
+################################ TESTS ZONE #################################
+#############################################################################
+
+function test_iterate() {
+  # test iterate function.
+  for i in "$@"; do
+    echo "$i"
+  done
+}
+
+
+function move() {
+  info="move: utility to move a file or folder (as appropriate) to a new location."
+  usage="move [--help] [file] [new location]"
+
+  echo "Attempting to move \"$1\" to \"$2\""
+
+  if [[ $# -eq 0 || "$1" =~ "--help" ]]; then
+    printf "1\n\n\n"
+    if (( $# == 0 )); then echo "Error: Please provide source and target file locations."; fi
+    echo "$info"
+    echo "$usage"
+    echo "$example"
+  # elif ! (( $# )); then
+  #   echo "Error: please name a file to move and the target location."
+  #   echo "$info"
+  #   echo "$usage"
+  elif ! [[ -d "$1" || -f "$1" ]]; then
+    printf "2\n\n\n"
+    echo "Error: target file is nonexistent."
+    echo "$info"
+    echo "$usage"
+  else
+    declare -n fullname; fullname="$2"
+    
+    # if [[ "$2" =~ "$1" ]]; then
+    #   fullname="$2"
+    # else
+    #   fullname="$2/$(basename $1)"
+    # fi
+
+    if  [[ -d "$1" ]]; then
+      printf "3\n\n\n"
+      echo "moving directory $1 to $fullname."
+      mv -r "$1" "$2"
+    elif [[ -d "$1" ]]; then
+      printf "4\n\n\n"
+      echo "moving file $1 to $fullname"
+      mv "$1" "$fullname"
+    fi
+  fi
+}
