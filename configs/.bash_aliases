@@ -2,41 +2,57 @@
 # custom bash aliases and functions
 # Author: siavava <amittaijoel@outlook.com>
 
+##### GPG Support ####
+#######################
+___tty=$(tty)
+export GPG_TTY="$___tty"
+#######################
+
 # to check size / sizes of folders and files.
 alias sizes='du -hs'
+
+alias git='hub'
+eval "$(hub alias -s)"
 
 # override disactivation of backslash escapes
 alias echo='echo -e'
 
 # friendly `ls`
+alias ls='ls -F --color=auto'
 alias lt='ls --human-readable --size -1 -S --classify'
+
 
 # view mounted drives
 alias mnt='mount | grep -E ^/dev | column -t'
 
 # search command history.
-alias search='history|grep'
+alias search='history | grep'
+
+# python aliases
+alias py='python'
+alias py3='python3'
+
+######## END OPENGL CUSTOMIZATION #########
 
 # to check weather in a given place 
 # -- (manually modified to work with my location)
-
 function weather() {
 
-  # if no argument, print for Hanover, NH.
+  # if no argument, print for current location.
   if [[ $# -eq 0 ]]; then
     printf "\nNo location specified.\nShowing updates for your current location.\n\n"
     curl -s "http://v2.wttr.in"
+
+  # if help flag, print usage info.
+  elif [[ "$1" == "--help" ]]; then
+    echo "Usage: weather { [--help] [location1] [location2] ... }"
+    echo "Running without any args shows current location."
 
   # else print weather for each location entered.
   else
     for location in "$@"; do
       curl -s "http://v2.wttr.in/$location"
     done
-
-    # while (( $# )); do
-    #   curl -s "http://v2.wttr.in/$1" 
-    #   shift
-    # done
   fi
 }
 
@@ -44,6 +60,13 @@ function weather() {
 function cd() {
   builtin cd "$@" || return
   printf "\n\033[0;32m%s\033[0m\n" "$(pwd)"
+}
+
+function what() {
+	RED="\u001b[31m"
+	RESET="\u001b[0m"
+	echo -e "$RED \nYou really fucked up lmao.\nBut at least you did something?\nNo?\nOkay then.\n$RESET"
+	return 0
 }
 
 # count the number of files in a directory.
@@ -187,6 +210,34 @@ function updatealiases() {
   return 1
 }
 
+# function git() {
+#   if [[ "$1" =~ "checkout" ]]; then
+#     /usr/bin/git checkout "$2" || {
+#       /usr/bin/git branch "$2" && /usr/bin/git checkout "$2"
+#     }
+#   else
+#     /usr/bin/git "$@"
+#   fi
+# }
+
+
+# function matrix() {
+#   local ___str='{a[$3]=0;for (x in a){o=a[x];a[x]=a[x]+1;printf "\033[%s;%sH\033[2;32m%s",o,x,$4;printf "\033[%s;%sH\033[1;37m%s\033[0;0H",a[x],x,$4;if (a[x] >= $1){a[x]=0;} }}'
+#   {
+#     while :; do
+#       echo $LINES $COLUMNS $(( $RANDOM % $COLUMNS)) $(printf "\U$(($RANDOM % 500))") | gawk ___str
+#       sleep 0.05
+#     done
+#    } 
+# }
+
+function matrix() {
+  while :;do echo $LINES $COLUMNS $(( RANDOM % COLUMNS)) $(printf "\U$((RANDOM % 500))");sleep 0.05;done|gawk '{a[$3]=0;for (x in a){o=a[x];a[x]=a[x]+1;printf "\033[%s;%sH\033[2;32m%s",o,x,$4;printf "\033[%s;%sH\033[1;37m%s\033[0;0H",a[x],x,$4;if (a[x] >= $1){a[x]=0;} }}'
+}
+
+function name () {
+  echo "$1" # arguments are accessible through $1, $2,...
+}
 
 
 
@@ -254,3 +305,27 @@ function move() {
     fi
   fi
 }
+
+alias LT=lt
+# safety aliases
+alias rm='rm -i'
+alias cp='cp -i'
+alias mv='mv -i'
+
+# convenience aliases
+alias ls='ls -F'
+alias mkdir='mkdir -p'
+alias which='type -all'
+alias du='du -kh'
+alias df='df -kTh'
+
+# pretty printing
+alias print='a2ps --landscape -2'
+alias print1='a2ps --portrait  -1'
+alias printwide='a2ps --landscape --columns=1 --chars-per-line=132'
+
+# not an exact substitute, but works for most; see also 'lam'
+alias abut=paste
+
+# convert ps to pdf
+alias distill='ps2pdf14 -dSubsetFonts=true -dEmbedAllFonts=true'
