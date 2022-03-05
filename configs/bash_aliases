@@ -2,15 +2,21 @@
 # custom bash aliases and functions
 # Author: siavava <amittaijoel@outlook.com>
 
-##### GPG Support ####
+#######################
+##### GPG Support #####
 #######################
 ___tty=$(tty)
 export GPG_TTY="$___tty"
 #######################
 
-# to check size / sizes of folders and files.
+#######################
+#### Handy aliases ####
+#######################
+
+# check fonder/file sizes.
 alias sizes='du -hs'
 
+# override git with enhanced `hub` utility.
 alias git='hub'
 eval "$(hub alias -s)"
 
@@ -20,6 +26,31 @@ alias echo='echo -e'
 # friendly `ls`
 alias ls='ls -F --color=auto'
 alias lt='ls --human-readable --size -1 -S --classify'
+alias LT=lt
+
+# safety aliases
+alias rm='rm -i'
+alias cp='cp -i'
+alias mv='mv -i'
+
+# convenience aliases
+alias mkdir='mkdir -p'
+alias which='type -all'
+alias du='du -kh'
+alias df='df -kTh'
+alias storage='df -kTh'
+
+# pretty printing
+alias print='a2ps --landscape -2'
+alias print1='a2ps --portrait  -1'
+alias printwide='a2ps --landscape --columns=1 --chars-per-line=132'
+
+# not an exact substitute, 
+# but works for most; see also 'lam'
+alias abut=paste
+
+# convert ps to pdf
+alias distill='ps2pdf14 -dSubsetFonts=true -dEmbedAllFonts=true'
 
 
 # view mounted drives
@@ -32,10 +63,16 @@ alias search='history | grep'
 alias py='python'
 alias py3='python3'
 
-######## END OPENGL CUSTOMIZATION #########
+alias history='history | less'
 
-# to check weather in a given place 
-# -- (manually modified to work with my location)
+
+#######################################
+########## Useful functions ###########
+#######################################
+
+# Function to check the weather in the command line.
+# Usage: weather [locations...]
+# If not location is specified, the current location is used.
 function weather() {
 
   # if no argument, print for current location.
@@ -47,6 +84,7 @@ function weather() {
   elif [[ "$1" == "--help" ]]; then
     echo "Usage: weather { [--help] [location1] [location2] ... }"
     echo "Running without any args shows current location."
+    return 1
 
   # else print weather for each location entered.
   else
@@ -54,19 +92,26 @@ function weather() {
       curl -s "http://v2.wttr.in/$location"
     done
   fi
+  return $?
 }
 
-# override cd to highlight current directory.
+# Functions to print more information
+# about directory operations.
+
+# 1. override cd to highlight current directory.
 function cd() {
   builtin cd "$@" || return
   printf "\n\033[0;32m%s\033[0m\n" "$(pwd)"
 }
-
-function what() {
-	RED="\u001b[31m"
-	RESET="\u001b[0m"
-	echo -e "$RED \nYou really fucked up lmao.\nBut at least you did something?\nNo?\nOkay then.\n$RESET"
-	return 0
+# 2. override pushd to highlight current directory.
+function pushd() {
+  builtin pushd "$@" || return
+  printf "\n\033[0;32m%s\033[0m\n" "$(pwd)"
+}
+# 3. override popd to highlight current directory.
+function popd() {
+  builtin popd "$@" || return
+  printf "\n\033[0;32m%s\033[0m\n" "$(pwd)"
 }
 
 # count the number of files in a directory.
@@ -83,6 +128,7 @@ function countfiles() {
   elif [[ "$1" == '--help' ]]; then
     echo "$info"
     echo "$usage"
+    return 0
   
   elif [[ "$1" == '-A' || "$1" == '--all' ]]; then
 
@@ -90,7 +136,7 @@ function countfiles() {
     if (( $# == 1 )); then
       find . | wc -l
     else
-      echo "${@:2}" 
+      echo "Counting files in ${*:2}" 
       find "${@:2}" | wc -l
     fi
   else
@@ -100,7 +146,17 @@ function countfiles() {
   fi
 }
 
-# run ocr on an image file from the internet.
+# What does this do?
+# No one knows, which is the point.
+function what() {
+	RED="\u001b[31m"
+	RESET="\u001b[0m"
+	echo -e "$RED \nYou really fucked up lmao.\nBut at least you did something?\nNo?\nOkay then.\n$RESET"
+	return 0
+}
+
+
+# Optical Image Recognition on the terminal.
 function ocr() {
 
   # help and usage info.
@@ -120,11 +176,6 @@ function ocr() {
 
   # exit status
   return "$?"
-}
-
-# view command history in manageable sequences.
-function history() {
-  builtin history "$@" | less
 }
 
 
@@ -189,7 +240,7 @@ function updatealiases() {
   else
     now=$(date +"%Y-%m-%d at %H:%M:%S")
     git checkout "main" &&
-    cp "$HOME/.bash_aliases" "./configs/.bash_aliases" &&
+    cp "$HOME/.bash_aliases" "./configs/bash_aliases" &&
     git add -A &&
 
     if [[ $(git commit -m "$now") ]]; then
@@ -205,127 +256,28 @@ function updatealiases() {
     fi
   fi
 
-  echo -e "An error occured.\nPlease make sure the \".bash_aliases\" file\nand 
-  you're running this command from the \".bash\" folder in the repo."
+  echo -e   "An error occured.\n
+            Please make sure the \".bash_aliases\" file exists\n
+            and you're running this command from the \".bash\" folder in the repo."
   return 1
 }
 
-# function git() {
-#   if [[ "$1" =~ "checkout" ]]; then
-#     /usr/bin/git checkout "$2" || {
-#       /usr/bin/git branch "$2" && /usr/bin/git checkout "$2"
-#     }
-#   else
-#     /usr/bin/git "$@"
-#   fi
-# }
+# A simple shifter function that
+# iterates through the arguments it gets.
+# Usage: shifter [--help] [args...]
+function shifter() {
+  usage="Usage: shifter [--help] [args...]"
 
-
-# function matrix() {
-#   local ___str='{a[$3]=0;for (x in a){o=a[x];a[x]=a[x]+1;printf "\033[%s;%sH\033[2;32m%s",o,x,$4;printf "\033[%s;%sH\033[1;37m%s\033[0;0H",a[x],x,$4;if (a[x] >= $1){a[x]=0;} }}'
-#   {
-#     while :; do
-#       echo $LINES $COLUMNS $(( $RANDOM % $COLUMNS)) $(printf "\U$(($RANDOM % 500))") | gawk ___str
-#       sleep 0.05
-#     done
-#    } 
-# }
-
-function matrix() {
-  while :;do echo $LINES $COLUMNS $(( RANDOM % COLUMNS)) $(printf "\U$((RANDOM % 500))");sleep 0.05;done|gawk '{a[$3]=0;for (x in a){o=a[x];a[x]=a[x]+1;printf "\033[%s;%sH\033[2;32m%s",o,x,$4;printf "\033[%s;%sH\033[1;37m%s\033[0;0H",a[x],x,$4;if (a[x] >= $1){a[x]=0;} }}'
-}
-
-function name () {
-  echo "$1" # arguments are accessible through $1, $2,...
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#############################################################################
-################################ TESTS ZONE #################################
-#############################################################################
-
-function test_iterate() {
-  # test iterate function.
-  for i in "$@"; do
-    echo "$i"
-  done
-}
-
-
-function move() {
-  info="move: utility to move a file or folder (as appropriate) to a new location."
-  usage="move [--help] [file] [new location]"
-
-  echo "Attempting to move \"$1\" to \"$2\""
-
-  if [[ $# -eq 0 || "$1" =~ "--help" ]]; then
-    printf "1\n\n\n"
-    if (( $# == 0 )); then echo "Error: Please provide source and target file locations."; fi
-    echo "$info"
+  if [[ $# -eq 0 || "$1" == "--help" ]]; then
     echo "$usage"
-    echo "$example"
-  # elif ! (( $# )); then
-  #   echo "Error: please name a file to move and the target location."
-  #   echo "$info"
-  #   echo "$usage"
-  elif ! [[ -d "$1" || -f "$1" ]]; then
-    printf "2\n\n\n"
-    echo "Error: target file is nonexistent."
-    echo "$info"
-    echo "$usage"
+  
   else
-    declare -n fullname; fullname="$2"
-    
-    # if [[ "$2" =~ "$1" ]]; then
-    #   fullname="$2"
-    # else
-    #   fullname="$2/$(basename $1)"
-    # fi
-
-    if  [[ -d "$1" ]]; then
-      printf "3\n\n\n"
-      echo "moving directory $1 to $fullname."
-      mv -r "$1" "$2"
-    elif [[ -d "$1" ]]; then
-      printf "4\n\n\n"
-      echo "moving file $1 to $fullname"
-      mv "$1" "$fullname"
-    fi
+    # test iterate function.
+    declare -i index=1
+    while (( $# )); do
+      echo "$(( index++ )): $1"
+      shift;
+    done
   fi
+  return 0
 }
-
-alias LT=lt
-# safety aliases
-alias rm='rm -i'
-alias cp='cp -i'
-alias mv='mv -i'
-
-# convenience aliases
-alias ls='ls -F'
-alias mkdir='mkdir -p'
-alias which='type -all'
-alias du='du -kh'
-alias df='df -kTh'
-
-# pretty printing
-alias print='a2ps --landscape -2'
-alias print1='a2ps --portrait  -1'
-alias printwide='a2ps --landscape --columns=1 --chars-per-line=132'
-
-# not an exact substitute, but works for most; see also 'lam'
-alias abut=paste
-
-# convert ps to pdf
-alias distill='ps2pdf14 -dSubsetFonts=true -dEmbedAllFonts=true'
