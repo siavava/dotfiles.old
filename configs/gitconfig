@@ -1,3 +1,5 @@
+# Default configuration for `git`
+
 [user]
 	name = siavava
 	email = amittaijoel@outlook.com
@@ -10,7 +12,9 @@
 [init]
 	defaultBranch = main
 [core]
+	# set vim as default editor
   editor = vim
+
   # pager started by git when needed
 	pager = less -R
 
