@@ -1,0 +1,24 @@
+[user]
+	name = siavava
+	email = amittaijoel@outlook.com
+	signingkey = 35F03516A20DD95C
+[credential]
+	password = kJDXDYk*3
+[commit]
+	gpgsign = true
+	template = /root/.gitmessage
+[init]
+	defaultBranch = main
+[core]
+  editor = vim
+  # pager started by git when needed
+	pager = less -R
+
+	# proceed with default merge message, rather than asking
+ 	mergeoptions = --no-edit
+[push]
+	gpgSign = false
+[receive]
+	advertisePushOptions = true
+[gpg]
+	program = gpg
