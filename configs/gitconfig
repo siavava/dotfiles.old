@@ -18,3 +18,5 @@
 	program = gpg
 # [receive]
 # 	advertisePushOptions = true
+[alias]
+	ac = commit -am

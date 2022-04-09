@@ -75,6 +75,10 @@ if [ "$color_prompt" = yes ]; then
     prompt_symbol="⚡"
     noxiur="λ"
     PS1=$prompt_color'┌──[\[\033[0;1m\]$prompt_symbol\w'$prompt_color']\n'$prompt_color'└─'$info_color'\$\[\033[0m\] '
+    # my prompt
+	PS1=$'\e[0;31mλ> \e[0m'
+    
+    #### OLD
     # PS1=$prompt_color'┌──${debian_chroot:+($debian_chroot)──}${VIRTUAL_ENV:+(\[\033[0;1m\]$(noxiur)'$prompt_color')}('$info_color'$noxiur'$prompt_color')-[\[\033[0;1m\]$prompt_symbol\w'$prompt_color']\n'$prompt_color'└─'$info_color'\$\[\033[0m\] '
 
     # PS1=$prompt_color'┌──${debian_chroot:+($debian_chroot)──}${VIRTUAL_ENV:+(\[\033[0;1m\]$(noxiur)'$prompt_color')}('$info_color'$noxiur'$prompt_color')-[\[\033[0;1m\]\w'$prompt_color']\n'$prompt_color'└─'$info_color'\$\[\033[0m\] '
@@ -144,8 +148,10 @@ fi
 # sources /etc/bash.bashrc).
 if ! shopt -oq posix; then
   if [ -f /usr/share/bash-completion/bash_completion ]; then
+  # shellcheck source=/dev/null
     . /usr/share/bash-completion/bash_completion
   elif [ -f /etc/bash_completion ]; then
+  # shellcheck source=/dev/null
     . /etc/bash_completion
   fi
 fi
@@ -180,11 +186,6 @@ alias which='type -all'
 
 # export COLUMNS info for odoo
 # eval "$(export COLUMNS)" 
-
-# export COPIA settings.ini file path
-# export COPIA_CORE_SETTINGS_FILE="/workspace/work/odoo_configs/.copia/settings.ini"
-
-
 
 ########### DISPLAY (matplotlib) ###########
 # add to ~/.bashrc, and source it.

@@ -2,7 +2,7 @@
 # see /usr/share/doc/zsh/examples/zshrc for examples
 
 setopt autocd              # change directory just by typing its name
-#setopt correct            # auto correct mistakes
+setopt correct             # auto correct mistakes
 setopt interactivecomments # allow comments in interactive mode
 setopt magicequalsubst     # enable filename expansion for arguments of the form ‘anything=expression’
 setopt nonomatch           # hide error message if there is no match for the pattern
@@ -27,7 +27,6 @@ bindkey '^[[6~' end-of-buffer-or-history          # page down
 bindkey '^[[H' beginning-of-line                  # home
 bindkey '^[[F' end-of-line                        # end
 bindkey '^[[Z' undo                               # shift + tab undo last action
-
 # enable completion features
 autoload -Uz compinit
 compinit -d ~/.cache/zcompdump
@@ -36,13 +35,13 @@ zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' # case insensitive tab
 
 # History configurations
 HISTFILE=~/.zsh_history
-HISTSIZE=1000
-SAVEHIST=2000
+HISTSIZE=5000
+SAVEHIST=10000
 setopt hist_expire_dups_first # delete duplicates first when HISTFILE size exceeds HISTSIZE
 setopt hist_ignore_dups       # ignore duplicated commands history list
 setopt hist_ignore_space      # ignore commands that start with space
 setopt hist_verify            # show command with history expansion to user before running it
-#setopt share_history         # share command history data
+setopt share_history          # share command history data
 
 # force zsh to show the complete history
 alias history="history 0"
@@ -51,7 +50,7 @@ alias history="history 0"
 TIMEFMT=$'real\t%E\nuser\t%U\nsys\t%S\ncpu\t%P'
 
 # make less more friendly for non-text input files, see lesspipe(1)
-#[ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
+[ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
 # set variable identifying the chroot you work in (used in the prompt below)
 if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
@@ -86,8 +85,11 @@ if [ -n "$force_color_prompt" ]; then
 fi
 
 if [ "$color_prompt" = yes ]; then
-    PROMPT=$'%F{%(#.blue.green)}┌──${debian_chroot:+($debian_chroot)──}$(venv_info)(%B%F{%(#.red.blue)}%n%(#.💀.㉿)%m%b%F{%(#.blue.green)})-[%B%F{reset}%(6~.%-1~/…/%4~.%5~)%b%F{%(#.blue.green)}]\n└─%B%(#.%F{red}#.%F{blue}$)%b%F{reset} '
+    # PROMPT=$'%F{%(#.blue.green)}┌──${debian_chroot:+($debian_chroot)──}$(venv_info)(%B%F{%(#.red.blue)}%n%(#.💀.㉿)%m%b%F{%(#.blue.green)})-[%B%F{reset}%(6~.%-1~/…/%4~.%5~)%b%F{%(#.blue.green)}]\n└─%B%(#.%F{red}#.%F{blue}$)%b%F{reset} '
     RPROMPT=$'%(?.. %? %F{red}%B⨯%b%F{reset})%(1j. %j %F{yellow}%B⚙%b%F{reset}.)'
+
+		# my prompt
+		PROMPT=$'\e[0;31mλ> \e[0m'
 
     # enable syntax-highlighting
     if [ -f /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ] && [ "$color_prompt" = yes ]; then
@@ -168,9 +170,8 @@ precmd() {
 if [ -x /usr/bin/dircolors ]; then
     test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
     alias ls='ls --color=auto'
-    #alias dir='dir --color=auto'
-    #alias vdir='vdir --color=auto'
-
+    alias dir='dir --color=auto'
+    alias vdir='vdir --color=auto'
     alias grep='grep --color=auto'
     alias fgrep='fgrep --color=auto'
     alias egrep='egrep --color=auto'
@@ -198,10 +199,69 @@ alias l='ls -CF'
 if [ -f /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh ]; then
     . /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh
     # change suggestion color
-    ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=#999'
+    ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=#143'
 fi
 
 # enable command-not-found if installed
 if [ -f /etc/zsh_command_not_found ]; then
     . /etc/zsh_command_not_found
 fi
+
+# source bash  aliases
+# why keep parallel running versions of these?
+if [[ -r $HOME/.bash_aliases ]]; then
+	. $HOME/.bash_aliases
+fi
+
+
+
+#### CS-50 BASH EXTENSIONS ####
+# --------------------------------------------------------------------
+# This file includes aliases required and recommended for CS50.
+# You should 'source' this file from your ~/.bashrc.
+# For more info type `man bash'.
+# --------------------------------------------------------------------
+
+# aliases used for cs50 development
+alias mygcc='gcc -Wall -pedantic -std=c11 -ggdb'
+alias myvalgrind='valgrind --leak-check=full --show-leak-kinds=all'
+
+# aliases for safety
+alias rm='rm -i'
+alias cp='cp -i'
+alias mv='mv -i'
+
+# aliases for convenience
+alias ls='ls -F --color=auto'
+alias mkdir='mkdir -p'
+alias which='which -a'
+
+# --------------------------------------------------------------------
+
+# pre-hooks to print PWD on <enter>
+# NOTE: Don't work in Bash.
+function preexec(){
+	cmd=$1
+}
+function precmd(){
+	if [[ "$cmd" ]]; then
+		lcmd=$cmd
+		cmd=;
+	else
+		echo -e "\e[0;31m$(pwd)\e[0m"
+	fi
+}
+
+
+# configure cargo settings.
+# . "$HOME/.cargo/env"
+
+########### DISPLAY (matplotlib) ###########
+# add to ~/.bashrc, and source it.
+DISPLAY=$(grep nameserver /etc/resolv.conf | awk '{print $2}'):0
+export DISPLAY
+
+[ -f "/root/.ghcup/env" ] && source "$HOME/.ghcup/env" # ghcup-env
+
+# addition
+bindkey '^I' autosuggest-accept			# autocomplete on TAB
