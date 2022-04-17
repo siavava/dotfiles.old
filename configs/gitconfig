@@ -2,21 +2,22 @@
 	name = siavava
 	email = amittaijoel@outlook.com
 	signingkey = 35F03516A20DD95C
-[credential]
-	password = kJDXDYk*3
+
 [commit]
 	gpgsign = true
 	template = ~/.gitmessage
+
 [init]
 	defaultBranch = main
+
 [core]
   editor = vim
 	pager = less -R
  	mergeoptions = --no-edit
 	excludesfile = ~/.gitignore
+
 [gpg]
 	program = gpg
-# [receive]
-# 	advertisePushOptions = true
+
 [alias]
 	ac = commit -am
