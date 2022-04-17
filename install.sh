@@ -58,19 +58,22 @@ function push() {
   now="$(date +"%Y-%m-%d at %H:%M:%S")"
   git switch -C "$node"
   git add -A &&
+  exitcode="0"
 
   if [[ $(git commit -m "$now") ]]; then
     if git push -u "origin" "$node"; then
       echo "Push successful!"
-      return 0
     else
       echo -e "Push to GitHub failed.\nPlease check the remote configuration and your internet connection."
-      return 1
+      exitcode="1"
     fi
   else
     echo -e "Commit failed.\nMost likely no files changed."
-    return 2
+    exitcode="2"
   fi
+
+  git checkout main
+  return $exitcode
 }
 
 : <<COMMENT
