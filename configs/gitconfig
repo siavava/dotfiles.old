@@ -12,9 +12,9 @@
 
 [core]
   editor = vim
-	pager = less -R
- 	mergeoptions = --no-edit
-	excludesfile = ~/.gitignore
+  pager = less -R
+  mergeoptions = --no-edit
+  excludesfile = ~/.gitignore
 
 [gpg]
 	program = gpg
