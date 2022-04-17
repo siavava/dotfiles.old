@@ -72,7 +72,7 @@ function push() {
     exitcode="2"
   fi
 
-  git checkout main
+  # git checkout main
   return $exitcode
 }
 
