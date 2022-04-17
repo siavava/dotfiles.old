@@ -26,8 +26,8 @@ alias echo='echo -e'
 # friendly `ls`
 alias ls='ls -F --color=auto'
 alias lt='ls --human-readable --size -1 -S --classify'
-alias LT=lt
-
+alias LT='lt'
+alias l='lt'
 # safety aliases
 alias rm='rm -i'
 alias cp='cp -i'
