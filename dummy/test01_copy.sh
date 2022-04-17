@@ -19,4 +19,4 @@ cp test01{,_copy}.sh
 
 name=Amittai\ Joel\ Siavava
 printf "My name is %s, and this is me.\n" $name
-echo $'name'
+echo "name: $name"

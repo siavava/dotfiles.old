@@ -1,0 +1,5 @@
+# conda configuration files.
+
+changeps1: false
+auto_activate_base: true
+repodata_threads: 4
