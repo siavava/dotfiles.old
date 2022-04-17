@@ -1,14 +1,14 @@
 [user]
-	name = siavava
-	email = amittaijoel@outlook.com
-	signingkey = 35F03516A20DD95C
+  name = siavava
+  email = amittaijoel@outlook.com
+  signingkey = 35F03516A20DD95C
 
 [commit]
-	gpgsign = true
-	template = ~/.gitmessage
+  gpgsign = true
+  template = ~/.gitmessage
 
 [init]
-	defaultBranch = main
+  defaultBranch = main
 
 [core]
   editor = vim
@@ -17,7 +17,7 @@
   excludesfile = ~/.gitignore
 
 [gpg]
-	program = gpg
+  program = gpg
 
 [alias]
-	ac = commit -am
+  ac = commit -am
