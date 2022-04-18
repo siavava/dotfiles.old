@@ -30,8 +30,7 @@ tmux.conf
 : <<COMMENT
 This function copies files from current repo to system (user) home directory.
 
-
-
+To copy from system directory to repo, use exp
 COMMENT
 function ins() {
   # Check if destination is specified
