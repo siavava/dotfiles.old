@@ -1,0 +1,23 @@
+[user]
+  name = siavava
+  email = amittaijoel@outlook.com
+  signingkey = 35F03516A20DD95C
+
+[commit]
+  gpgsign = true
+  template = ~/.gitmessage
+
+[init]
+  defaultBranch = main
+
+[core]
+  editor = vim
+  pager = less -R
+  mergeoptions = --no-edit
+  excludesfile = ~/.gitignore
+
+[gpg]
+  program = gpg
+
+[alias]
+  ac = commit -am

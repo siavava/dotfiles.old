@@ -1,0 +1,13 @@
+##############################################
+###### Account-Wide IGNORE LIST ##############
+##############################################
+
+.vscode
+*__pycache__*
+
+# latex build files
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.synctex.gz

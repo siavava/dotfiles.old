@@ -24,11 +24,8 @@ tmux.conf
 zshrc
 zsh_aliases
 condarc
+gpg.key
 '
-
-for t in $targets; do
-  echo "Installing $t"
-done
 
 : <<COMMENT
 This function copies files from current repo to system (user) home directory.
@@ -57,7 +54,10 @@ function ins() {
   # Cross-copy all files.
   for target in $targets; do
     if [[ -r "$sourcedir/$target" ]]; then
-      copy 2 "$target" "$sourcedir" "$destinationdir"
+      echo "Copying $target..."
+      copy "2" "$target" "$sourcedir" "$destinationdir"
+    else
+      echo "$sourcedir/$target not found..."
     fi
   done
 
@@ -78,7 +78,7 @@ function exp() {
   # Cross-copy all files.
   for target in $targets; do
     if [[ -r "$sourcedir/.$target" ]]; then
-      copy 1 "$target" "$sourcedir" "$destinationdir"
+      copy "1" "$target" "$sourcedir" "$destinationdir"
     fi
   done
 
@@ -134,7 +134,8 @@ Example: copy bash_aliases configs
 This function always returns 0.
 COMMENT
 function copy() {
-  if (( $# != 3 )); then
+  if (( $# != 4 )); then
+    echo "Invalid number of arguments: $#"
     return 1
   fi
 
@@ -149,6 +150,8 @@ function copy() {
 
   # destination directory
   destination="$4"
+
+  # echo "mode: $mode, filename: $filename, sourcedir: $sourcedir, destination: $destination"
 
   case $mode in
     1)
@@ -169,7 +172,6 @@ function copy() {
       ;;
     2)
       # repo --> dotfiles
-      cp "$sourcedir/$filename" "$destination"
       # process the file.
       if [[ -r "$sourcedir/$filename" ]]; then
         if [[ -r "$destination/.$filename" ]]; then
@@ -182,6 +184,8 @@ function copy() {
         else
           cp -f "$sourcedir/$filename" "$destination/.$filename"
         fi
+      else
+        echo "$sourcedir/$filename not found."
       fi
       ;;
     *) 
@@ -209,14 +213,14 @@ fi
 
 case $mode in
   1)
-    exp "$*"
+    exp "$@"
     ;;
   2)
-    ins "$*"
+    ins "$@"
     ;;
   *)
     echo "Invalid mode."
-    return 1
+    exit 1
     ;;
 esac
 
