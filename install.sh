@@ -13,18 +13,18 @@ COMMENT
 # !! -- > add extra targets here
 targets=\
 '
-bash_aliases
-bashrc
-bash_profile
-pubring.kbx
-gitconfig
-gitignore
-vimrc
+.bash_aliases
+.bashrc
+.bash_profile
+.gitconfig
+.gitignore
+.vimrc
 tmux.conf
-zshrc
-zsh_aliases
-condarc
-gpg.key
+.zshrc
+.zsh_aliases
+.condarc
+.gnupg/gpg.key
+./gnupg/pubring.kbx
 '
 
 : <<COMMENT
