@@ -7,37 +7,83 @@ Author: Amittai <amittaijoel@outlook.com>
 
 Update system dotfiles and push to GitHub.
 
-Usage: ./install.sh [--help || destination] [source]
+Usage: ./install.sh [--help || mode ] [source] [destination]
 COMMENT
-function updatealiases() {
-  info="This utility updates dotfiles."
-  destination="configs"
-  source="$HOME"
-  targets="bash_aliases bashrc bash_profile pubring.kbx gitconfig gitignore vimrc tmux.conf zshrc zsh_aliases condarc"
 
-  if (( $# != 0 )) && [[ "$1" == '--help' || "$1" == '-h' || "$1" == '-H' ]]; then
-    echo "$info"
-    echo "Usage: $0 [--help] [-y]"
-    return 3
+# !! -- > add extra targets here
+targets=\
+'
+bash_aliases
+bashrc
+bash_profile
+pubring.kbx
+gitconfig
+gitignore
+vimrc
+tmux.conf
+zshrc
+zsh_aliases
+condarc
+'
+
+for t in $targets; do
+  echo "Installing $t"
+done
+
+: <<COMMENT
+This function copies files from current repo to system (user) home directory.
+
+
+
+COMMENT
+function ins() {
+  # Check if destination is specified
+  if [[ -z "$1" ]]; then
+    echo "No destination specified. Using default: $HOME"
+    local destinationdir="$HOME"
+  else
+    local destinationdir="$1"
   fi
 
+  if [[ -z "$2" ]]; then
+    echo "No source specified. Using default: $(pwd)/configs"
+    sourcedir="$(pwd)/configs"
+  else
+    sourcedir="$2"
+  fi
+
+  echo "Installing dotfiles from $sourcedir to $destinationdir..."
+
+  # Cross-copy all files.
+  for target in $targets; do
+    if [[ -r "$sourcedir/$target" ]]; then
+      copy 2 "$target" "$sourcedir" "$destinationdir"
+    fi
+  done
+
+}
+
+function exp() {
+  info="This utility updates dotfiles."
+  local destinationdir="configs"
+  local sourcedir="$HOME"
+
   if [[ -n "$1" ]]; then
-    source="$1"
+    sourcedir="$1"
     if [[ -n "$2" ]]; then
-      destination="$2"
+      destinationdir="$2"
     fi
   fi
 
   # Cross-copy all files.
   for target in $targets; do
-    if [[ -r "$source/.$target" ]]; then
-      copy "$target" "$source" "$destination"
+    if [[ -r "$sourcedir/.$target" ]]; then
+      copy 1 "$target" "$sourcedir" "$destinationdir"
     fi
   done
 
   # push updates (if any) to GitHub
   push
-
   return 0
 }
 
@@ -77,9 +123,9 @@ function push() {
 }
 
 : <<COMMENT
-Copy configs file from $source to a specified directory.
+Copy configs file from sourcedir to a specified directory.
 
-Usage: copy [filename] [destination]
+Usage: copy [mode] [filename] [destination]
 
 NOTE: Exclude the '.' from the filename.
 
@@ -93,24 +139,85 @@ function copy() {
   fi
 
   # variables
-  filename="$1"
-  source="$2"
-  destination="$3"
+  declare -i mode=$1
 
-  # process the file.
-  if [[ -r "$source/.$filename" ]]; then
-    if [[ -r "$destination/$filename" ]]; then
-      if [[ $(diff "$source/.$filename" "$destination/$filename") ]]; then
-        echo "Copying $filename..."
-        cp -f "$source/.$filename" "$destination/$filename"
-      else
-        echo "$filename is up to date."
+  # filename
+  filename="$2"
+
+  # source directory
+  sourcedir="$3"
+
+  # destination directory
+  destination="$4"
+
+  case $mode in
+    1)
+      # dotfiles --> repo
+      # process the file.
+      if [[ -r "$sourcedir/.$filename" ]]; then
+        if [[ -r "$destination/$filename" ]]; then
+          if [[ $(diff "$sourcedir/.$filename" "$destination/$filename") ]]; then
+            echo "Copying $filename..."
+            cp -f "$sourcedir/.$filename" "$destination/$filename"
+          else
+            echo "$filename is up to date."
+          fi
+        else
+          cp -f "$sourcedir/.$filename" "$destination/$filename"
+        fi
       fi
-    else
-      cp -f "$source/.$filename" "$destination/$filename"
-    fi
-  fi
+      ;;
+    2)
+      # repo --> dotfiles
+      cp "$sourcedir/$filename" "$destination"
+      # process the file.
+      if [[ -r "$sourcedir/$filename" ]]; then
+        if [[ -r "$destination/.$filename" ]]; then
+          if [[ $(diff "$sourcedir/$filename" "$destination/.$filename") ]]; then
+            echo "Copying $filename..."
+            cp -f "$sourcedir/$filename" "$destination/.$filename"
+          else
+            echo "$filename is up to date."
+          fi
+        else
+          cp -f "$sourcedir/$filename" "$destination/.$filename"
+        fi
+      fi
+      ;;
+    *) 
+      # invalid mode
+      echo "Invalid mode."
+      return 1
+      ;;
+  esac
   return 0
 }
 
-updatealiases "$@"
+
+if (( $# )) && [[ "$1" == '--help' || "$1" == '-h' || "$1" == '-H' ]]; then
+  echo "$info"
+  echo "Usage: $0 [--help] [-y]"
+  return 3
+fi
+  
+mode="1"
+
+if (( $# )); then
+  mode="$1"
+  shift
+fi
+
+case $mode in
+  1)
+    exp "$*"
+    ;;
+  2)
+    ins "$*"
+    ;;
+  *)
+    echo "Invalid mode."
+    return 1
+    ;;
+esac
+
+exit 0
