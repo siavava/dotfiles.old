@@ -6,7 +6,7 @@
 
 ```bash
 # mode 1 (default) = copy from system to file
-# moe 2 = copy to system
+# mode 2 = copy to system
 
 # copy dotfiles from $HOME, push to git
 ./install.sh
