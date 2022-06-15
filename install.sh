@@ -200,7 +200,7 @@ function copy() {
 if (( $# )) && [[ "$1" == '--help' || "$1" == '-h' || "$1" == '-H' ]]; then
   echo "$info"
   echo "Usage: $0 [--help] [-y]"
-  return 3
+  exit 3
 fi
   
 mode="1"
